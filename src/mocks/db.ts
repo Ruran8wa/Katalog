@@ -1,4 +1,4 @@
-import type { Category, Product, User, Variant } from '@/types'
+import type { Category, Order, Product, User, Variant } from '@/types'
 import { deriveStockStatus } from '@/utils/stockStatus'
 
 export interface MockUser extends User {
@@ -512,3 +512,5 @@ export const users: MockUser[] = [
     password: 'admin123',
   },
 ]
+
+export const orders: Order[] = []
