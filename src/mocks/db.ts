@@ -1,4 +1,5 @@
 import type { Category, Product, User, Variant } from '@/types'
+import { deriveStockStatus } from '@/utils/stockStatus'
 
 export interface MockUser extends User {
   password: string
@@ -126,7 +127,7 @@ export const variants: Variant[] = [
     sku: 'IMG-TEE-S',
     price: 12000,
     stock: 30,
-    status: 'IN_STOCK',
+    status: deriveStockStatus(30),
     isActive: true,
   },
   {
@@ -135,7 +136,7 @@ export const variants: Variant[] = [
     sku: 'IMG-TEE-M',
     price: 12000,
     stock: 18,
-    status: 'IN_STOCK',
+    status: deriveStockStatus(18),
     isActive: true,
   },
   {
@@ -144,7 +145,7 @@ export const variants: Variant[] = [
     sku: 'IMG-TEE-L',
     price: 12000,
     stock: 3,
-    status: 'LOW_STOCK',
+    status: deriveStockStatus(3),
     isActive: true,
   },
   {
@@ -153,7 +154,7 @@ export const variants: Variant[] = [
     sku: 'IMG-TEE-XL-DISC',
     price: 12000,
     stock: 0,
-    status: 'OUT_OF_STOCK',
+    status: deriveStockStatus(0),
     isActive: false,
   },
   {
@@ -162,7 +163,7 @@ export const variants: Variant[] = [
     sku: 'KGL-TEE-S',
     price: 14000,
     stock: 20,
-    status: 'IN_STOCK',
+    status: deriveStockStatus(20),
     isActive: true,
   },
   {
@@ -171,7 +172,7 @@ export const variants: Variant[] = [
     sku: 'KGL-TEE-M',
     price: 14000,
     stock: 4,
-    status: 'LOW_STOCK',
+    status: deriveStockStatus(4),
     isActive: true,
   },
   {
@@ -180,7 +181,7 @@ export const variants: Variant[] = [
     sku: 'KGL-TEE-L',
     price: 14000,
     stock: 0,
-    status: 'OUT_OF_STOCK',
+    status: deriveStockStatus(0),
     isActive: true,
   },
   {
@@ -189,7 +190,7 @@ export const variants: Variant[] = [
     sku: 'INY-POLO-S',
     price: 22000,
     stock: 16,
-    status: 'IN_STOCK',
+    status: deriveStockStatus(16),
     isActive: true,
   },
   {
@@ -198,7 +199,7 @@ export const variants: Variant[] = [
     sku: 'INY-POLO-M',
     price: 22000,
     stock: 9,
-    status: 'IN_STOCK',
+    status: deriveStockStatus(9),
     isActive: true,
   },
   {
@@ -207,7 +208,7 @@ export const variants: Variant[] = [
     sku: 'INY-POLO-L',
     price: 22000,
     stock: 2,
-    status: 'LOW_STOCK',
+    status: deriveStockStatus(2),
     isActive: true,
   },
   {
@@ -216,7 +217,7 @@ export const variants: Variant[] = [
     sku: 'INY-POLO-XL',
     price: 23000,
     stock: 0,
-    status: 'OUT_OF_STOCK',
+    status: deriveStockStatus(0),
     isActive: true,
   },
   {
@@ -225,7 +226,7 @@ export const variants: Variant[] = [
     sku: 'KTG-SHIRT-M',
     price: 28000,
     stock: 12,
-    status: 'IN_STOCK',
+    status: deriveStockStatus(12),
     isActive: true,
   },
   {
@@ -234,7 +235,7 @@ export const variants: Variant[] = [
     sku: 'KTG-SHIRT-L',
     price: 28000,
     stock: 5,
-    status: 'IN_STOCK',
+    status: deriveStockStatus(5),
     isActive: true,
   },
   {
@@ -243,7 +244,7 @@ export const variants: Variant[] = [
     sku: 'KTG-SHIRT-XL',
     price: 29000,
     stock: 1,
-    status: 'LOW_STOCK',
+    status: deriveStockStatus(1),
     isActive: true,
   },
   {
@@ -252,7 +253,7 @@ export const variants: Variant[] = [
     sku: 'KCO-SHIRT-S',
     price: 25000,
     stock: 14,
-    status: 'IN_STOCK',
+    status: deriveStockStatus(14),
     isActive: true,
   },
   {
@@ -261,7 +262,7 @@ export const variants: Variant[] = [
     sku: 'KCO-SHIRT-M',
     price: 25000,
     stock: 0,
-    status: 'OUT_OF_STOCK',
+    status: deriveStockStatus(0),
     isActive: true,
   },
   {
@@ -270,7 +271,7 @@ export const variants: Variant[] = [
     sku: 'KCO-SHIRT-L',
     price: 25000,
     stock: 7,
-    status: 'IN_STOCK',
+    status: deriveStockStatus(7),
     isActive: true,
   },
   {
@@ -279,7 +280,7 @@ export const variants: Variant[] = [
     sku: 'CHN-PANT-30',
     price: 26000,
     stock: 11,
-    status: 'IN_STOCK',
+    status: deriveStockStatus(11),
     isActive: true,
   },
   {
@@ -288,7 +289,7 @@ export const variants: Variant[] = [
     sku: 'CHN-PANT-32',
     price: 26000,
     stock: 8,
-    status: 'IN_STOCK',
+    status: deriveStockStatus(8),
     isActive: true,
   },
   {
@@ -297,7 +298,7 @@ export const variants: Variant[] = [
     sku: 'CHN-PANT-34',
     price: 26000,
     stock: 3,
-    status: 'LOW_STOCK',
+    status: deriveStockStatus(3),
     isActive: true,
   },
   {
@@ -306,7 +307,7 @@ export const variants: Variant[] = [
     sku: 'CHN-PANT-36',
     price: 26000,
     stock: 0,
-    status: 'OUT_OF_STOCK',
+    status: deriveStockStatus(0),
     isActive: true,
   },
   {
@@ -315,7 +316,7 @@ export const variants: Variant[] = [
     sku: 'DNM-PANT-30',
     price: 32000,
     stock: 9,
-    status: 'IN_STOCK',
+    status: deriveStockStatus(9),
     isActive: true,
   },
   {
@@ -324,7 +325,7 @@ export const variants: Variant[] = [
     sku: 'DNM-PANT-32',
     price: 32000,
     stock: 2,
-    status: 'LOW_STOCK',
+    status: deriveStockStatus(2),
     isActive: true,
   },
   {
@@ -333,7 +334,7 @@ export const variants: Variant[] = [
     sku: 'DNM-PANT-34',
     price: 32000,
     stock: 15,
-    status: 'IN_STOCK',
+    status: deriveStockStatus(15),
     isActive: true,
   },
   {
@@ -342,7 +343,7 @@ export const variants: Variant[] = [
     sku: 'CGO-PANT-32',
     price: 30000,
     stock: 6,
-    status: 'IN_STOCK',
+    status: deriveStockStatus(6),
     isActive: true,
   },
   {
@@ -351,7 +352,7 @@ export const variants: Variant[] = [
     sku: 'CGO-PANT-34',
     price: 30000,
     stock: 0,
-    status: 'OUT_OF_STOCK',
+    status: deriveStockStatus(0),
     isActive: true,
   },
   {
@@ -360,7 +361,7 @@ export const variants: Variant[] = [
     sku: 'CGO-PANT-36',
     price: 30000,
     stock: 4,
-    status: 'LOW_STOCK',
+    status: deriveStockStatus(4),
     isActive: true,
   },
   {
@@ -369,7 +370,7 @@ export const variants: Variant[] = [
     sku: 'AGK-CAP-BLK',
     price: 9000,
     stock: 25,
-    status: 'IN_STOCK',
+    status: deriveStockStatus(25),
     isActive: true,
   },
   {
@@ -378,7 +379,7 @@ export const variants: Variant[] = [
     sku: 'AGK-CAP-BEIGE',
     price: 9000,
     stock: 3,
-    status: 'LOW_STOCK',
+    status: deriveStockStatus(3),
     isActive: true,
   },
   {
@@ -387,7 +388,7 @@ export const variants: Variant[] = [
     sku: 'AGK-CAP-GREEN',
     price: 9500,
     stock: 0,
-    status: 'OUT_OF_STOCK',
+    status: deriveStockStatus(0),
     isActive: true,
   },
   {
@@ -396,7 +397,7 @@ export const variants: Variant[] = [
     sku: 'RWC-CAP-BLK',
     price: 8500,
     stock: 40,
-    status: 'IN_STOCK',
+    status: deriveStockStatus(40),
     isActive: true,
   },
   {
@@ -405,7 +406,7 @@ export const variants: Variant[] = [
     sku: 'RWC-CAP-KHAKI',
     price: 8500,
     stock: 5,
-    status: 'IN_STOCK',
+    status: deriveStockStatus(5),
     isActive: true,
   },
   {
@@ -414,7 +415,7 @@ export const variants: Variant[] = [
     sku: 'VLC-COAT-M',
     price: 58000,
     stock: 7,
-    status: 'IN_STOCK',
+    status: deriveStockStatus(7),
     isActive: true,
   },
   {
@@ -423,7 +424,7 @@ export const variants: Variant[] = [
     sku: 'VLC-COAT-L',
     price: 58000,
     stock: 1,
-    status: 'LOW_STOCK',
+    status: deriveStockStatus(1),
     isActive: true,
   },
   {
@@ -432,7 +433,7 @@ export const variants: Variant[] = [
     sku: 'VLC-COAT-XL',
     price: 60000,
     stock: 0,
-    status: 'OUT_OF_STOCK',
+    status: deriveStockStatus(0),
     isActive: true,
   },
   {
@@ -441,7 +442,7 @@ export const variants: Variant[] = [
     sku: 'NYG-JKT-S',
     price: 45000,
     stock: 13,
-    status: 'IN_STOCK',
+    status: deriveStockStatus(13),
     isActive: true,
   },
   {
@@ -450,7 +451,7 @@ export const variants: Variant[] = [
     sku: 'NYG-JKT-M',
     price: 45000,
     stock: 10,
-    status: 'IN_STOCK',
+    status: deriveStockStatus(10),
     isActive: true,
   },
   {
@@ -459,7 +460,7 @@ export const variants: Variant[] = [
     sku: 'NYG-JKT-L',
     price: 45000,
     stock: 4,
-    status: 'LOW_STOCK',
+    status: deriveStockStatus(4),
     isActive: true,
   },
   {
@@ -468,7 +469,7 @@ export const variants: Variant[] = [
     sku: 'NYG-JKT-XL',
     price: 47000,
     stock: 0,
-    status: 'OUT_OF_STOCK',
+    status: deriveStockStatus(0),
     isActive: true,
   },
   {
@@ -477,7 +478,7 @@ export const variants: Variant[] = [
     sku: 'AKG-COAT-M',
     price: 89000,
     stock: 2,
-    status: 'LOW_STOCK',
+    status: deriveStockStatus(2),
     isActive: true,
   },
   {
@@ -486,7 +487,7 @@ export const variants: Variant[] = [
     sku: 'AKG-COAT-L',
     price: 89000,
     stock: 0,
-    status: 'OUT_OF_STOCK',
+    status: deriveStockStatus(0),
     isActive: true,
   },
 ]
