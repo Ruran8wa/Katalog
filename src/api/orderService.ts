@@ -1,6 +1,7 @@
-import { orders, users, variants } from '@/mocks/db'
+import { orders, variants } from '@/mocks/db'
 import type { Order, OrderItem } from '@/types'
 import { deriveStockStatus } from '@/utils/stockStatus'
+import { requireAuthenticatedUser } from './authService'
 import { delay } from './delay'
 
 export interface CartItemInput {
@@ -8,20 +9,14 @@ export interface CartItemInput {
   quantity: number
 }
 
-export async function checkout(
-  items: CartItemInput[],
-  userId: string,
-): Promise<Order> {
+export async function checkout(items: CartItemInput[]): Promise<Order> {
   await delay()
 
   if (items.length === 0) {
     throw new Error('Cart is empty')
   }
 
-  const user = users.find((u) => u.id === userId)
-  if (!user) {
-    throw new Error(`User with id "${userId}" not found`)
-  }
+  const user = requireAuthenticatedUser()
 
   const quantityByVariantId = new Map<string, number>()
   for (const item of items) {
@@ -73,7 +68,7 @@ export async function checkout(
 
   const order: Order = {
     id: crypto.randomUUID(),
-    userId,
+    userId: user.id,
     items: orderItems,
     totalPrice: orderItems.reduce((sum, item) => sum + item.totalPrice, 0),
     purchasedAt: new Date().toISOString(),
@@ -85,14 +80,14 @@ export async function checkout(
 export async function buyVariant(
   variantId: string,
   quantity: number,
-  userId: string,
 ): Promise<Order> {
-  return checkout([{ variantId, quantity }], userId)
+  return checkout([{ variantId, quantity }])
 }
 
-export async function getOrdersByUser(userId: string): Promise<Order[]> {
+export async function getMyOrders(): Promise<Order[]> {
   await delay()
+  const user = requireAuthenticatedUser()
   return orders
-    .filter((order) => order.userId === userId)
+    .filter((order) => order.userId === user.id)
     .sort((a, b) => b.purchasedAt.localeCompare(a.purchasedAt))
 }

@@ -2,6 +2,7 @@ import { users } from '@/mocks/db'
 import type { AuthResponse, User } from '@/types'
 import { delay } from './delay'
 import { createMockToken, decodeMockToken } from './mockJwt'
+import { getAuthToken } from './session'
 
 export async function login(
   email: string,
@@ -21,10 +22,13 @@ export async function login(
   return { token: createMockToken(user), user }
 }
 
-export async function getCurrentUser(token: string): Promise<User> {
-  await delay()
-  const payload = decodeMockToken(token)
+export function requireAuthenticatedUser(): User {
+  const token = getAuthToken()
+  if (!token) {
+    throw new Error('Not authenticated')
+  }
 
+  const payload = decodeMockToken(token)
   if (payload.exp * 1000 < Date.now()) {
     throw new Error('Token expired')
   }
@@ -35,4 +39,9 @@ export async function getCurrentUser(token: string): Promise<User> {
   }
 
   return { id: match.id, email: match.email, role: match.role }
+}
+
+export async function getCurrentUser(): Promise<User> {
+  await delay()
+  return requireAuthenticatedUser()
 }
