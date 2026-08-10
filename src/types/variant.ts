@@ -1,0 +1,11 @@
+export type VariantStatus = 'IN_STOCK' | 'LOW_STOCK' | 'OUT_OF_STOCK'
+
+export interface Variant {
+  id: string
+  productId: string
+  sku: string
+  price: number
+  stock: number
+  status: VariantStatus
+  isActive: boolean
+}
