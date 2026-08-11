@@ -6,6 +6,7 @@ export interface Product {
   description: string
   categoryId: string
   isActive: boolean
+  imageUrl: string
 }
 
 export interface ProductWithVariants extends Product {

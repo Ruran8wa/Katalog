@@ -1,11 +1,19 @@
 import { categories, products, variants } from '@/mocks/db'
-import type { Product, ProductWithVariants, Variant } from '@/types'
+import type { Category, Product, ProductWithVariants, Variant } from '@/types'
 import { deriveStockStatus } from '@/utils/stockStatus'
 import { delay } from './delay'
 
+export async function getCategories(): Promise<Category[]> {
+  await delay()
+  return categories
+}
+
 export interface GetProductsParams {
   keyword?: string
+  categoryIds?: string[]
+  minPrice?: number
   maxPrice?: number
+  includeInactive?: boolean
 }
 
 export interface ProductInput {
@@ -13,6 +21,11 @@ export interface ProductInput {
   description: string
   categoryId: string
   isActive: boolean
+  imageUrl: string
+}
+
+export interface ProductListItem extends Product {
+  fromPrice: number | null
 }
 
 export interface VariantInput {
@@ -32,22 +45,32 @@ function minActivePrice(productId: string): number | null {
 
 export async function getProducts(
   params: GetProductsParams = {},
-): Promise<Product[]> {
+): Promise<ProductListItem[]> {
   await delay()
   const keyword = params.keyword?.trim().toLowerCase()
 
-  return products.filter((product) => {
-    if (!product.isActive) return false
-    if (keyword && !product.name.toLowerCase().includes(keyword)) return false
-    if (params.maxPrice !== undefined) {
-      const price = minActivePrice(product.id)
-      if (price === null || price > params.maxPrice) return false
-    }
-    return true
-  })
+  return products
+    .filter((product) => {
+      if (!product.isActive && !params.includeInactive) return false
+      if (keyword && !product.name.toLowerCase().includes(keyword)) return false
+      if (params.categoryIds?.length && !params.categoryIds.includes(product.categoryId)) {
+        return false
+      }
+      if (params.minPrice !== undefined || params.maxPrice !== undefined) {
+        const price = minActivePrice(product.id)
+        if (price === null) return false
+        if (params.minPrice !== undefined && price < params.minPrice) return false
+        if (params.maxPrice !== undefined && price > params.maxPrice) return false
+      }
+      return true
+    })
+    .map((product) => ({ ...product, fromPrice: minActivePrice(product.id) }))
 }
 
-export async function getProductById(id: string): Promise<ProductWithVariants> {
+export async function getProductById(
+  id: string,
+  options: { includeInactiveVariants?: boolean } = {},
+): Promise<ProductWithVariants> {
   await delay()
   const product = products.find((p) => p.id === id)
   if (!product) {
@@ -55,14 +78,16 @@ export async function getProductById(id: string): Promise<ProductWithVariants> {
   }
 
   const category = categories.find((c) => c.id === product.categoryId)
-  const activeVariants = variants.filter(
-    (variant) => variant.productId === id && variant.isActive,
+  const productVariants = variants.filter(
+    (variant) =>
+      variant.productId === id &&
+      (variant.isActive || options.includeInactiveVariants),
   )
 
   return {
     ...product,
     categoryName: category?.name ?? '',
-    variants: activeVariants,
+    variants: productVariants,
   }
 }
 

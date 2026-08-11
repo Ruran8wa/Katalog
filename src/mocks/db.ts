@@ -21,6 +21,8 @@ export const products: Product[] = [
       'Cotton tee printed with a modern take on traditional Imigongo geometric art. Made in Kigali.',
     categoryId: 'cat-1',
     isActive: true,
+    imageUrl:
+      'https://plus.unsplash.com/premium_photo-1718913931807-4da5b5dd27fa?auto=format&fit=crop&w=800&q=80',
   },
   {
     id: 'prod-2',
@@ -29,6 +31,8 @@ export const products: Product[] = [
       'Soft ring-spun cotton t-shirt featuring a screen-printed Kigali skyline.',
     categoryId: 'cat-1',
     isActive: true,
+    imageUrl:
+      'https://plus.unsplash.com/premium_photo-1692650759344-84ff0f26ff1e?auto=format&fit=crop&w=800&q=80',
   },
   {
     id: 'prod-3',
@@ -37,6 +41,8 @@ export const products: Product[] = [
       'Breathable piqué polo shirt with an embroidered Inyambo horn emblem.',
     categoryId: 'cat-2',
     isActive: true,
+    imageUrl:
+      'https://plus.unsplash.com/premium_photo-1682165232152-874f4a56b4f5?auto=format&fit=crop&w=800&q=80',
   },
   {
     id: 'prod-4',
@@ -45,6 +51,8 @@ export const products: Product[] = [
       'Tailored button-up shirt cut from vibrant, locally-sourced Kitenge fabric.',
     categoryId: 'cat-2',
     isActive: true,
+    imageUrl:
+      'https://plus.unsplash.com/premium_photo-1726863204842-d919cb0cab0d?auto=format&fit=crop&w=800&q=80',
   },
   {
     id: 'prod-5',
@@ -53,6 +61,8 @@ export const products: Product[] = [
       'Crisp Oxford-weave cotton shirt for everyday wear, tailored in Kigali.',
     categoryId: 'cat-2',
     isActive: true,
+    imageUrl:
+      'https://plus.unsplash.com/premium_photo-1678218594563-9fe0d16c6838?auto=format&fit=crop&w=800&q=80',
   },
   {
     id: 'prod-6',
@@ -61,6 +71,8 @@ export const products: Product[] = [
       'Durable cotton-twill chinos with a comfortable straight-leg fit.',
     categoryId: 'cat-3',
     isActive: true,
+    imageUrl:
+      'https://plus.unsplash.com/premium_photo-1690366911138-bd50985e0379?auto=format&fit=crop&w=800&q=80',
   },
   {
     id: 'prod-7',
@@ -69,6 +81,8 @@ export const products: Product[] = [
       'Stretch denim pants with a tapered, slim-fit cut and reinforced stitching.',
     categoryId: 'cat-3',
     isActive: true,
+    imageUrl:
+      'https://plus.unsplash.com/premium_photo-1674828601362-afb73c907ebe?auto=format&fit=crop&w=800&q=80',
   },
   {
     id: 'prod-8',
@@ -77,6 +91,8 @@ export const products: Product[] = [
       'Rugged cargo pants with multiple utility pockets, built for the field.',
     categoryId: 'cat-3',
     isActive: true,
+    imageUrl:
+      'https://plus.unsplash.com/premium_photo-1708110768383-608e9fba949c?auto=format&fit=crop&w=800&q=80',
   },
   {
     id: 'prod-9',
@@ -85,6 +101,8 @@ export const products: Product[] = [
       'Structured snapback cap with a woven side panel inspired by the Agaseke basket.',
     categoryId: 'cat-4',
     isActive: true,
+    imageUrl:
+      'https://plus.unsplash.com/premium_photo-1759165726241-baa579071e3a?auto=format&fit=crop&w=800&q=80',
   },
   {
     id: 'prod-10',
@@ -93,6 +111,8 @@ export const products: Product[] = [
       'Low-profile cotton dad cap with an embroidered Rwanda crest patch.',
     categoryId: 'cat-4',
     isActive: true,
+    imageUrl:
+      'https://plus.unsplash.com/premium_photo-1680859126205-1c593bb4f9e8?auto=format&fit=crop&w=800&q=80',
   },
   {
     id: 'prod-11',
@@ -101,6 +121,8 @@ export const products: Product[] = [
       'Heavyweight fleece-lined coat designed for cool highland evenings.',
     categoryId: 'cat-5',
     isActive: true,
+    imageUrl:
+      'https://plus.unsplash.com/premium_photo-1671030274122-b6ac34f87b8b?auto=format&fit=crop&w=800&q=80',
   },
   {
     id: 'prod-12',
@@ -109,6 +131,8 @@ export const products: Product[] = [
       'Lightweight waterproof shell jacket, packable and built for the rain.',
     categoryId: 'cat-5',
     isActive: true,
+    imageUrl:
+      'https://plus.unsplash.com/premium_photo-1664360970485-99ec77c55787?auto=format&fit=crop&w=800&q=80',
   },
   {
     id: 'prod-13',
@@ -117,6 +141,8 @@ export const products: Product[] = [
       'Wool-blend peacoat with a tailored silhouette. Seasonal line, currently discontinued.',
     categoryId: 'cat-5',
     isActive: false,
+    imageUrl:
+      'https://images.unsplash.com/photo-1553209717-ddc5aa729bd2?auto=format&fit=crop&w=800&q=80',
   },
 ]
 
