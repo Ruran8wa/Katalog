@@ -520,12 +520,6 @@ export const variants: Variant[] = [
 
 export const users: MockUser[] = [
   {
-    id: 'user-1',
-    email: 'public@katalog.rw',
-    role: 'PUBLIC',
-    password: 'public123',
-  },
-  {
     id: 'user-2',
     email: 'user@katalog.rw',
     role: 'USER',

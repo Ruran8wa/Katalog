@@ -17,6 +17,9 @@ export async function checkout(items: CartItemInput[]): Promise<Order> {
   }
 
   const user = requireAuthenticatedUser()
+  if (user.role === 'ADMIN') {
+    throw new Error('Admins cannot place orders')
+  }
 
   const quantityByVariantId = new Map<string, number>()
   for (const item of items) {
