@@ -4,6 +4,9 @@ export interface Variant {
   id: string
   productId: string
   sku: string
+  color: string
+  colorHex: string
+  size: string
   price: number
   stock: number
   status: VariantStatus

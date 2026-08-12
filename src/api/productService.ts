@@ -26,11 +26,15 @@ export interface ProductInput {
 
 export interface ProductListItem extends Product {
   fromPrice: number | null
+  colors: { name: string; hex: string }[]
 }
 
 export interface VariantInput {
   productId: string
   sku: string
+  color: string
+  colorHex: string
+  size: string
   price: number
   stock: number
   isActive: boolean
@@ -41,6 +45,17 @@ function minActivePrice(productId: string): number | null {
     .filter((variant) => variant.productId === productId && variant.isActive)
     .map((variant) => variant.price)
   return activePrices.length > 0 ? Math.min(...activePrices) : null
+}
+
+function productColors(productId: string): { name: string; hex: string }[] {
+  const seen = new Set<string>()
+  const colors: { name: string; hex: string }[] = []
+  for (const v of variants) {
+    if (v.productId !== productId || !v.isActive || seen.has(v.color)) continue
+    seen.add(v.color)
+    colors.push({ name: v.color, hex: v.colorHex })
+  }
+  return colors
 }
 
 export async function getProducts(
@@ -64,7 +79,11 @@ export async function getProducts(
       }
       return true
     })
-    .map((product) => ({ ...product, fromPrice: minActivePrice(product.id) }))
+    .map((product) => ({
+      ...product,
+      fromPrice: minActivePrice(product.id),
+      colors: productColors(product.id),
+    }))
 }
 
 export async function getProductById(
