@@ -6,6 +6,7 @@ export interface Product {
   description: string
   categoryId: string
   isActive: boolean
+  isBestSeller: boolean
   imageUrl: string
 }
 

@@ -4,6 +4,7 @@ import { RequireAdmin } from '@/components/RequireAdmin'
 import { RequireNonAdmin } from '@/components/RequireNonAdmin'
 import { AdminPage } from '@/pages/AdminPage'
 import { AdminProductPage } from '@/pages/AdminProductPage'
+import { CategoryPage } from '@/pages/CategoryPage'
 import { HomePage } from '@/pages/HomePage'
 import { LoginPage } from '@/pages/LoginPage'
 import { NotFoundPage } from '@/pages/NotFoundPage'
@@ -15,6 +16,7 @@ function App() {
       <Route element={<Layout />}>
         <Route element={<RequireNonAdmin />}>
           <Route path="/" element={<HomePage />} />
+          <Route path="/category/:categoryId" element={<CategoryPage />} />
           <Route path="/products/:id" element={<ProductDetailPage />} />
         </Route>
         <Route path="/login" element={<LoginPage />} />

@@ -32,9 +32,9 @@ export function AdminPage() {
           <li key={product.id}>
             <Link
               to={`/admin/products/${product.id}`}
-              className="flex items-center gap-3 rounded-lg border border-border p-3 hover:bg-muted"
+              className="flex items-center gap-3 border border-border p-3 hover:bg-muted"
             >
-              <div className="size-12 shrink-0 overflow-hidden rounded-md bg-muted">
+              <div className="size-12 shrink-0 overflow-hidden bg-muted">
                 <img
                   src={product.imageUrl}
                   alt=""
@@ -44,8 +44,8 @@ export function AdminPage() {
               <div className="flex flex-1 flex-col">
                 <span className="font-medium">{product.name}</span>
                 <span className="text-sm text-muted-foreground">
-                  {product.fromPrice !== null
-                    ? `From ${product.fromPrice.toLocaleString()} RWF`
+                  {product.defaultVariant !== null
+                    ? `From ${product.defaultVariant.price.toLocaleString()} RWF`
                     : 'No active variants'}
                 </span>
               </div>

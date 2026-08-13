@@ -1,191 +1,94 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { getCategories, getProducts, type ProductListItem } from '@/api/productService'
+import { ProductCard, ProductCardSkeleton } from '@/components/ProductCard'
+import { pickRandom } from '@/utils/pickRandom'
 import type { Category } from '@/types'
 
-export function HomePage() {
-  const [keyword, setKeyword] = useState('')
-  const [categories, setCategories] = useState<Category[]>([])
-  const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([])
-  const [minPriceInput, setMinPriceInput] = useState('')
-  const [maxPriceInput, setMaxPriceInput] = useState('')
-  const [products, setProducts] = useState<ProductListItem[]>([])
-  const [loadedKey, setLoadedKey] = useState<string | null>(null)
-  const [error, setError] = useState<string | null>(null)
+const CATEGORY_IMAGES: Record<string, string> = {
+  'T-Shirts': 'https://images.unsplash.com/photo-1778671394516-8270eac13c42?auto=format&fit=crop&w=400&q=80',
+  Shirts: 'https://images.unsplash.com/photo-1671438118097-479e63198629?auto=format&fit=crop&w=400&q=80',
+  Pants: 'https://images.unsplash.com/photo-1718252540617-6ecda2b56b57?auto=format&fit=crop&w=400&q=80',
+  Caps: 'https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&w=400&q=80',
+  'Coats & Jackets':
+    'https://images.unsplash.com/photo-1551028719-00167b16eac5?auto=format&fit=crop&w=400&q=80',
+}
 
-  const minPrice = minPriceInput ? Number(minPriceInput) : undefined
-  const maxPrice = maxPriceInput ? Number(maxPriceInput) : undefined
-  const filterKey = JSON.stringify({ keyword, selectedCategoryIds, minPrice, maxPrice })
-  const isLoading = loadedKey !== filterKey
-  const hasActiveFilters =
-    selectedCategoryIds.length > 0 || minPriceInput !== '' || maxPriceInput !== ''
+const RECOMMENDED_COUNT = 5
+
+export function HomePage() {
+  const [categories, setCategories] = useState<Category[]>([])
+  const [recommended, setRecommended] = useState<ProductListItem[] | null>(null)
 
   useEffect(() => {
     getCategories().then(setCategories)
   }, [])
 
   useEffect(() => {
-    let cancelled = false
-    getProducts({ keyword, categoryIds: selectedCategoryIds, minPrice, maxPrice })
-      .then((result) => {
-        if (!cancelled) {
-          setProducts(result)
-          setError(null)
-        }
-      })
-      .catch((err: unknown) => {
-        if (!cancelled) setError(err instanceof Error ? err.message : 'Failed to load products')
-      })
-      .finally(() => {
-        if (!cancelled) setLoadedKey(filterKey)
-      })
-    return () => {
-      cancelled = true
-    }
-  }, [keyword, selectedCategoryIds, minPrice, maxPrice, filterKey])
-
-  const categoryName = (categoryId: string) =>
-    categories.find((c) => c.id === categoryId)?.name ?? ''
-
-  function toggleCategory(categoryId: string) {
-    setSelectedCategoryIds((prev) =>
-      prev.includes(categoryId)
-        ? prev.filter((id) => id !== categoryId)
-        : [...prev, categoryId],
-    )
-  }
-
-  function clearFilters() {
-    setSelectedCategoryIds([])
-    setMinPriceInput('')
-    setMaxPriceInput('')
-  }
+    getProducts({}).then((products) => setRecommended(pickRandom(products, RECOMMENDED_COUNT)))
+  }, [])
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-1">
-        <h1 className="text-2xl font-semibold tracking-tight">Shop the collection</h1>
-        <p className="text-sm text-muted-foreground">
-          Rwandan-made apparel, from everyday tees to highland-ready coats.
-        </p>
-      </div>
-
-      <input
-        type="search"
-        value={keyword}
-        onChange={(e) => setKeyword(e.target.value)}
-        placeholder="Search products..."
-        className="w-full max-w-sm rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
-      />
-
-      <div className="flex flex-col gap-8 lg:flex-row lg:items-start">
-        <aside className="flex w-full shrink-0 flex-col gap-6 lg:w-56">
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center justify-between">
-              <h2 className="text-sm font-medium">Filters</h2>
-              {hasActiveFilters && (
-                <button
-                  type="button"
-                  onClick={clearFilters}
-                  className="text-xs text-muted-foreground hover:underline"
-                >
-                  Clear
-                </button>
-              )}
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-2">
-            <h3 className="text-sm font-medium">Category</h3>
-            <ul className="flex flex-col gap-1.5">
-              {categories.map((category) => (
-                <li key={category.id}>
-                  <label className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <input
-                      type="checkbox"
-                      checked={selectedCategoryIds.includes(category.id)}
-                      onChange={() => toggleCategory(category.id)}
-                    />
-                    {category.name}
-                  </label>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="flex flex-col gap-2">
-            <h3 className="text-sm font-medium">Price (RWF)</h3>
-            <div className="flex items-center gap-2">
-              <input
-                type="number"
-                min={0}
-                inputMode="numeric"
-                value={minPriceInput}
-                onChange={(e) => setMinPriceInput(e.target.value)}
-                placeholder="Min"
-                className="w-full min-w-0 rounded-lg border border-border bg-background px-2 py-1.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
-              />
-              <span className="text-muted-foreground">–</span>
-              <input
-                type="number"
-                min={0}
-                inputMode="numeric"
-                value={maxPriceInput}
-                onChange={(e) => setMaxPriceInput(e.target.value)}
-                placeholder="Max"
-                className="w-full min-w-0 rounded-lg border border-border bg-background px-2 py-1.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
-              />
-            </div>
-          </div>
-        </aside>
-
-        <div className="flex-1">
-          {error && <p className="text-destructive">{error}</p>}
-
-          {!isLoading && products.length === 0 && !error && (
-            <p className="text-muted-foreground">No products found.</p>
-          )}
-
-          <ul className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3">
-            {(isLoading ? Array.from({ length: 8 }) : products).map((product, i) => {
-              const item = product as ProductListItem | undefined
-              return (
-                <li key={item?.id ?? i}>
-                  {item ? (
-                    <Link to={`/products/${item.id}`} className="group flex flex-col gap-2">
-                      <div className="aspect-square overflow-hidden rounded-xl bg-muted">
-                        <img
-                          src={item.imageUrl}
-                          alt={item.name}
-                          loading="lazy"
-                          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                        />
-                      </div>
-                      <div className="flex flex-col gap-0.5">
-                        <span className="text-xs text-muted-foreground">
-                          {categoryName(item.categoryId)}
-                        </span>
-                        <h2 className="text-sm font-medium leading-snug">{item.name}</h2>
-                        <span className="text-sm font-semibold">
-                          {item.fromPrice !== null
-                            ? `From ${item.fromPrice.toLocaleString()} RWF`
-                            : 'Unavailable'}
-                        </span>
-                      </div>
-                    </Link>
-                  ) : (
-                    <div className="flex flex-col gap-2">
-                      <div className="aspect-square animate-pulse rounded-xl bg-muted" />
-                      <div className="h-3 w-2/3 animate-pulse rounded bg-muted" />
-                      <div className="h-3 w-1/3 animate-pulse rounded bg-muted" />
-                    </div>
-                  )}
-                </li>
-              )
-            })}
-          </ul>
+      <section className="relative left-1/2 -mt-6 h-dvh w-screen -mx-[50vw]">
+        <img
+          src="https://images.unsplash.com/photo-1760337741510-1a4661e036fa?auto=format&fit=crop&w=1920&q=80"
+          alt="Models wearing Katalog apparel"
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+        <div className="absolute inset-0 bg-black/20" />
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-6 px-4 text-center">
+          <h1 className="font-heading max-w-4xl text-4xl font-bold tracking-tight text-white uppercase sm:text-6xl md:text-7xl">
+            Wear Your Roots
+          </h1>
+          <a
+            href="#collection"
+            className="rounded-lg border border-white px-6 py-2.5 text-sm font-bold tracking-wide text-white uppercase transition-colors hover:bg-white hover:text-black"
+          >
+            Shop now
+          </a>
         </div>
-      </div>
+      </section>
+
+      <section className="flex flex-col gap-4">
+        <h2 className="text-xl font-semibold tracking-tight">Search by category</h2>
+        <div className="grid grid-cols-3 gap-x-4 gap-y-6 sm:grid-cols-5">
+          {categories.map((category) => (
+            <Link
+              key={category.id}
+              to={`/category/${category.id}`}
+              className="group flex flex-col items-center gap-2 text-center"
+            >
+              <div className="flex aspect-square w-full items-center justify-center overflow-hidden bg-secondary/60 p-5 transition-colors group-hover:bg-secondary">
+                <img
+                  src={CATEGORY_IMAGES[category.name]}
+                  alt=""
+                  className="h-full w-full object-contain"
+                />
+              </div>
+              <span className="text-xs font-medium sm:text-sm">{category.name}</span>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      <section id="collection" className="flex scroll-mt-20 flex-col gap-4">
+        <div className="flex flex-col gap-1">
+          <h2 className="text-xl font-semibold tracking-tight">Recommended for you</h2>
+          <p className="text-sm text-muted-foreground">A few picks from across the collection.</p>
+        </div>
+
+        <ul className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 lg:grid-cols-5">
+          {(recommended ?? Array.from({ length: RECOMMENDED_COUNT })).map((product, i) => {
+            const item = product as ProductListItem | undefined
+            return (
+              <li key={item?.id ?? i}>
+                {item ? <ProductCard product={item} /> : <ProductCardSkeleton />}
+              </li>
+            )
+          })}
+        </ul>
+      </section>
     </div>
   )
 }

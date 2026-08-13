@@ -21,26 +21,42 @@ export interface ProductInput {
   description: string
   categoryId: string
   isActive: boolean
+  isBestSeller: boolean
   imageUrl: string
 }
 
 export interface ProductListItem extends Product {
-  fromPrice: number | null
+  colors: { name: string; hex: string }[]
+  defaultVariant: Variant | null
 }
 
 export interface VariantInput {
   productId: string
   sku: string
+  color: string
+  colorHex: string
+  size: string
   price: number
+  originalPrice?: number | null
   stock: number
   isActive: boolean
 }
 
-function minActivePrice(productId: string): number | null {
-  const activePrices = variants
-    .filter((variant) => variant.productId === productId && variant.isActive)
-    .map((variant) => variant.price)
-  return activePrices.length > 0 ? Math.min(...activePrices) : null
+function cheapestActiveVariant(productId: string): Variant | null {
+  const active = variants.filter((v) => v.productId === productId && v.isActive)
+  if (active.length === 0) return null
+  return active.reduce((cheapest, v) => (v.price < cheapest.price ? v : cheapest))
+}
+
+function productColors(productId: string): { name: string; hex: string }[] {
+  const seen = new Set<string>()
+  const colors: { name: string; hex: string }[] = []
+  for (const v of variants) {
+    if (v.productId !== productId || !v.isActive || seen.has(v.color)) continue
+    seen.add(v.color)
+    colors.push({ name: v.color, hex: v.colorHex })
+  }
+  return colors
 }
 
 export async function getProducts(
@@ -57,14 +73,18 @@ export async function getProducts(
         return false
       }
       if (params.minPrice !== undefined || params.maxPrice !== undefined) {
-        const price = minActivePrice(product.id)
+        const price = cheapestActiveVariant(product.id)?.price ?? null
         if (price === null) return false
         if (params.minPrice !== undefined && price < params.minPrice) return false
         if (params.maxPrice !== undefined && price > params.maxPrice) return false
       }
       return true
     })
-    .map((product) => ({ ...product, fromPrice: minActivePrice(product.id) }))
+    .map((product) => ({
+      ...product,
+      colors: productColors(product.id),
+      defaultVariant: cheapestActiveVariant(product.id),
+    }))
 }
 
 export async function getProductById(
@@ -121,6 +141,7 @@ export async function createVariant(data: VariantInput): Promise<Variant> {
   const variant: Variant = {
     id: crypto.randomUUID(),
     ...data,
+    originalPrice: data.originalPrice ?? null,
     status: deriveStockStatus(data.stock),
   }
   variants.push(variant)
