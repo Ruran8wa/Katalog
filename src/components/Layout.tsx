@@ -18,6 +18,11 @@ export function Layout() {
             {!isAdmin && <CartDrawerTrigger />}
             {user ? (
               <>
+                {!isAdmin && (
+                  <Link to="/orders" className="hover:underline">
+                    Orders
+                  </Link>
+                )}
                 <span className="text-muted-foreground">{user.email}</span>
                 <Button variant="outline" size="sm" onClick={logout}>
                   Log out

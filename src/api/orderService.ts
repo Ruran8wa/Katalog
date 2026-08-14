@@ -1,5 +1,5 @@
-import { orders, variants } from '@/mocks/db'
-import type { Order, OrderItem } from '@/types'
+import { orders, products, variants } from '@/mocks/db'
+import type { Order, OrderItem, OrderWithDetails } from '@/types'
 import { deriveStockStatus } from '@/utils/stockStatus'
 import { requireAuthenticatedUser } from './authService'
 import { delay } from './delay'
@@ -87,10 +87,26 @@ export async function buyVariant(
   return checkout([{ variantId, quantity }])
 }
 
-export async function getMyOrders(): Promise<Order[]> {
+export async function getMyOrders(): Promise<OrderWithDetails[]> {
   await delay()
   const user = requireAuthenticatedUser()
   return orders
     .filter((order) => order.userId === user.id)
     .sort((a, b) => b.purchasedAt.localeCompare(a.purchasedAt))
+    .map((order) => ({
+      ...order,
+      items: order.items.map((item) => {
+        const variant = variants.find((v) => v.id === item.variantId)
+        const product = variant
+          ? products.find((p) => p.id === variant.productId)
+          : undefined
+        return {
+          ...item,
+          productId: product?.id ?? '',
+          productName: product?.name ?? 'Unknown product',
+          productImageUrl: product?.imageUrl ?? '',
+          sku: variant?.sku ?? '',
+        }
+      }),
+    }))
 }
