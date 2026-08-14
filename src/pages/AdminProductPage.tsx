@@ -1,0 +1,306 @@
+import { useEffect, useState, type FormEvent } from 'react'
+import { Link, Navigate, useParams } from 'react-router-dom'
+import {
+  createProduct,
+  createVariant,
+  getCategories,
+  getProductById,
+  updateProduct,
+  updateVariant,
+  type ProductInput,
+} from '@/api/productService'
+import { Button } from '@/components/ui/button'
+import type { Category, ProductWithVariants } from '@/types'
+
+const emptyProduct: ProductInput = {
+  name: '',
+  description: '',
+  categoryId: '',
+  isActive: true,
+  imageUrl: '',
+}
+
+export function AdminProductPage() {
+  const { id } = useParams<{ id: string }>()
+  const isNew = id === 'new'
+
+  const [categories, setCategories] = useState<Category[]>([])
+  const [product, setProduct] = useState<ProductWithVariants | null>(null)
+  const [form, setForm] = useState<ProductInput>(emptyProduct)
+  const [loadedId, setLoadedId] = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  const [isSaving, setIsSaving] = useState(false)
+  const [createdId, setCreatedId] = useState<string | null>(null)
+  const isLoading = !isNew && loadedId !== id
+
+  useEffect(() => {
+    getCategories().then(setCategories)
+  }, [])
+
+  useEffect(() => {
+    if (isNew || !id) return
+    getProductById(id, { includeInactiveVariants: true })
+      .then((result) => {
+        setProduct(result)
+        setForm({
+          name: result.name,
+          description: result.description,
+          categoryId: result.categoryId,
+          isActive: result.isActive,
+          imageUrl: result.imageUrl,
+        })
+        setError(null)
+      })
+      .catch((err: unknown) =>
+        setError(err instanceof Error ? err.message : 'Failed to load product'),
+      )
+      .finally(() => setLoadedId(id))
+  }, [id, isNew])
+
+  if (createdId) {
+    return <Navigate to={`/admin/products/${createdId}`} replace />
+  }
+
+  async function handleSubmit(e: FormEvent) {
+    e.preventDefault()
+    setError(null)
+    setIsSaving(true)
+    try {
+      if (isNew) {
+        const created = await createProduct(form)
+        setCreatedId(created.id)
+      } else if (id) {
+        const updated = await updateProduct(id, form)
+        setProduct((prev) => (prev ? { ...prev, ...updated } : prev))
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to save product')
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  async function handleVariantSave(
+    variantId: string,
+    data: { price: number; stock: number; isActive: boolean },
+  ) {
+    setError(null)
+    try {
+      await updateVariant(variantId, data)
+      if (id) setProduct(await getProductById(id, { includeInactiveVariants: true }))
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to save variant')
+    }
+  }
+
+  async function handleVariantCreate(sku: string) {
+    if (!id || isNew) return
+    setError(null)
+    try {
+      await createVariant({ productId: id, sku, price: 0, stock: 0, isActive: true })
+      setProduct(await getProductById(id, { includeInactiveVariants: true }))
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to add variant')
+    }
+  }
+
+  if (isLoading) return <p className="text-muted-foreground">Loading...</p>
+
+  return (
+    <div className="flex flex-col gap-6">
+      <Link to="/admin" className="text-sm text-muted-foreground hover:underline">
+        &larr; Back to admin
+      </Link>
+      <h1 className="text-2xl font-semibold">
+        {isNew ? 'New product' : product?.name}
+      </h1>
+
+      {error && <p className="text-destructive">{error}</p>}
+
+      <form onSubmit={handleSubmit} className="flex max-w-md flex-col gap-3">
+        <label className="flex flex-col gap-1 text-sm">
+          Name
+          <input
+            required
+            value={form.name}
+            onChange={(e) => setForm({ ...form, name: e.target.value })}
+            className="rounded-lg border border-border bg-background px-3 py-2 outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+          />
+        </label>
+        <label className="flex flex-col gap-1 text-sm">
+          Description
+          <textarea
+            required
+            value={form.description}
+            onChange={(e) => setForm({ ...form, description: e.target.value })}
+            className="rounded-lg border border-border bg-background px-3 py-2 outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+          />
+        </label>
+        <label className="flex flex-col gap-1 text-sm">
+          Image URL
+          <input
+            required
+            type="url"
+            value={form.imageUrl}
+            onChange={(e) => setForm({ ...form, imageUrl: e.target.value })}
+            placeholder="https://..."
+            className="rounded-lg border border-border bg-background px-3 py-2 outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+          />
+        </label>
+        {form.imageUrl && (
+          <div className="size-32 overflow-hidden rounded-lg bg-muted">
+            <img
+              src={form.imageUrl}
+              alt=""
+              className="h-full w-full object-cover"
+            />
+          </div>
+        )}
+        <label className="flex flex-col gap-1 text-sm">
+          Category
+          <select
+            required
+            value={form.categoryId}
+            onChange={(e) => setForm({ ...form, categoryId: e.target.value })}
+            className="rounded-lg border border-border bg-background px-3 py-2 outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+          >
+            <option value="" disabled>
+              Select a category
+            </option>
+            {categories.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="flex items-center gap-2 text-sm">
+          <input
+            type="checkbox"
+            checked={form.isActive}
+            onChange={(e) => setForm({ ...form, isActive: e.target.checked })}
+          />
+          Active
+        </label>
+        <Button type="submit" disabled={isSaving}>
+          {isSaving ? 'Saving...' : isNew ? 'Create product' : 'Save changes'}
+        </Button>
+      </form>
+
+      {!isNew && product && (
+        <VariantsEditor
+          variants={product.variants}
+          onSave={handleVariantSave}
+          onCreate={handleVariantCreate}
+        />
+      )}
+    </div>
+  )
+}
+
+function VariantsEditor({
+  variants,
+  onSave,
+  onCreate,
+}: {
+  variants: ProductWithVariants['variants']
+  onSave: (
+    variantId: string,
+    data: { price: number; stock: number; isActive: boolean },
+  ) => void
+  onCreate: (sku: string) => void
+}) {
+  const [newSku, setNewSku] = useState('')
+
+  return (
+    <div className="flex max-w-md flex-col gap-3">
+      <h2 className="font-medium">Variants</h2>
+      <ul className="flex flex-col gap-2">
+        {variants.map((variant) => (
+          <VariantRow key={variant.id} variant={variant} onSave={onSave} />
+        ))}
+      </ul>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault()
+          if (!newSku.trim()) return
+          onCreate(newSku.trim())
+          setNewSku('')
+        }}
+        className="flex gap-2"
+      >
+        <input
+          value={newSku}
+          onChange={(e) => setNewSku(e.target.value)}
+          placeholder="New variant SKU"
+          className="flex-1 rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+        />
+        <Button type="submit" variant="outline">
+          Add variant
+        </Button>
+      </form>
+    </div>
+  )
+}
+
+function VariantRow({
+  variant,
+  onSave,
+}: {
+  variant: ProductWithVariants['variants'][number]
+  onSave: (
+    variantId: string,
+    data: { price: number; stock: number; isActive: boolean },
+  ) => void
+}) {
+  const [price, setPrice] = useState(variant.price)
+  const [stock, setStock] = useState(variant.stock)
+  const [isActive, setIsActive] = useState(variant.isActive)
+
+  return (
+    <li className="flex flex-col gap-2 rounded-lg border border-border p-3">
+      <div className="flex items-center justify-between">
+        <span className="font-medium">{variant.sku}</span>
+        <span className="text-xs text-muted-foreground">{variant.status}</span>
+      </div>
+      <div className="flex items-center gap-2 text-sm">
+        <label className="flex items-center gap-1">
+          Price
+          <input
+            type="number"
+            min={0}
+            value={price}
+            onChange={(e) => setPrice(Number(e.target.value))}
+            className="w-24 rounded-lg border border-border bg-background px-2 py-1"
+          />
+        </label>
+        <label className="flex items-center gap-1">
+          Stock
+          <input
+            type="number"
+            min={0}
+            value={stock}
+            onChange={(e) => setStock(Number(e.target.value))}
+            className="w-20 rounded-lg border border-border bg-background px-2 py-1"
+          />
+        </label>
+        <label className="flex items-center gap-1">
+          <input
+            type="checkbox"
+            checked={isActive}
+            onChange={(e) => setIsActive(e.target.checked)}
+          />
+          Active
+        </label>
+        <Button
+          type="button"
+          size="sm"
+          variant="outline"
+          onClick={() => onSave(variant.id, { price, stock, isActive })}
+        >
+          Save
+        </Button>
+      </div>
+    </li>
+  )
+}
