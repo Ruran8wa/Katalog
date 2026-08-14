@@ -106,6 +106,8 @@ export async function getMyOrders(): Promise<OrderWithDetails[]> {
           productName: product?.name ?? 'Unknown product',
           productImageUrl: product?.imageUrl ?? '',
           sku: variant?.sku ?? '',
+          color: variant?.color ?? '',
+          size: variant?.size ?? '',
         }
       }),
     }))

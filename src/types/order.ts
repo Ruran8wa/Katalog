@@ -18,6 +18,8 @@ export interface OrderItemWithDetails extends OrderItem {
   productName: string
   productImageUrl: string
   sku: string
+  color: string
+  size: string
 }
 
 export interface OrderWithDetails extends Omit<Order, 'items'> {

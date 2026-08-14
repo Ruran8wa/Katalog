@@ -19,6 +19,8 @@ export interface CartLine {
   productName: string
   productImageUrl: string
   sku: string
+  color: string
+  size: string
   price: number
   quantity: number
   stock: number

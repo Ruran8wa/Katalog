@@ -80,7 +80,7 @@ export function OrderHistoryPage() {
                   <li key={item.variantId} className="flex gap-3">
                     <Link
                       to={item.productId ? `/products/${item.productId}` : '#'}
-                      className="size-16 shrink-0 overflow-hidden rounded-lg bg-muted"
+                      className="size-16 shrink-0 overflow-hidden bg-muted"
                     >
                       {item.productImageUrl && (
                         <img
@@ -97,8 +97,10 @@ export function OrderHistoryPage() {
                       >
                         {item.productName}
                       </Link>
-                      {item.sku && (
-                        <span className="text-xs text-muted-foreground">{item.sku}</span>
+                      {(item.color || item.size) && (
+                        <span className="text-xs text-muted-foreground">
+                          {item.color} / {item.size}
+                        </span>
                       )}
                       <span className="text-sm text-muted-foreground">
                         Qty {item.quantity} &times; {item.unitPrice.toLocaleString()} RWF
