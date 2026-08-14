@@ -70,18 +70,22 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartLine[]>(() => readStoredCart(userId))
   const [loadedUserId, setLoadedUserId] = useState(userId)
 
-  if (userId !== loadedUserId) {
-    const guestCart = loadedUserId === null ? items : null
-    setLoadedUserId(userId)
-    if (guestCart && guestCart.length > 0 && userId !== null) {
-      // Guest -> logged in: carry the guest cart forward into the account's cart.
-      setItems(mergeCartItems(readStoredCart(userId), guestCart))
-      localStorage.removeItem(cartStorageKey(null))
-    } else {
+  useEffect(() => {
+    if (userId === loadedUserId) return
+
+    setItems((currentItems) => {
+      const guestCart = loadedUserId === null ? currentItems : null
+      if (guestCart && guestCart.length > 0 && userId !== null) {
+        // Guest -> logged in: carry the guest cart forward into the account's cart.
+        localStorage.removeItem(cartStorageKey(null))
+        return mergeCartItems(readStoredCart(userId), guestCart)
+      }
       // Logging out (or switching accounts) never copies a cart into another bucket.
-      setItems(readStoredCart(userId))
-    }
-  }
+      return readStoredCart(userId)
+    })
+
+    setLoadedUserId(userId)
+  }, [userId, loadedUserId])
 
   useEffect(() => {
     localStorage.setItem(cartStorageKey(userId), JSON.stringify(items))

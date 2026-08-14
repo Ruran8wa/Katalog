@@ -18,7 +18,8 @@ function base64UrlEncode(input: string): string {
 }
 
 function base64UrlDecode(input: string): string {
-  const padded = input.replace(/-/g, '+').replace(/_/g, '/')
+  let padded = input.replace(/-/g, '+').replace(/_/g, '/')
+  while (padded.length % 4 !== 0) padded += '='
   const binary = atob(padded)
   const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0))
   return new TextDecoder().decode(bytes)
