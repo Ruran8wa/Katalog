@@ -17,6 +17,7 @@ const emptyProduct: ProductInput = {
   description: '',
   categoryId: '',
   isActive: true,
+  isBestSeller: false,
   imageUrl: '',
 }
 
@@ -47,6 +48,7 @@ export function AdminProductPage() {
           description: result.description,
           categoryId: result.categoryId,
           isActive: result.isActive,
+          isBestSeller: result.isBestSeller,
           imageUrl: result.imageUrl,
         })
         setError(null)
@@ -82,7 +84,7 @@ export function AdminProductPage() {
 
   async function handleVariantSave(
     variantId: string,
-    data: { price: number; stock: number; isActive: boolean },
+    data: { price: number; originalPrice: number | null; stock: number; isActive: boolean },
   ) {
     setError(null)
     try {
@@ -93,11 +95,16 @@ export function AdminProductPage() {
     }
   }
 
-  async function handleVariantCreate(sku: string) {
+  async function handleVariantCreate(data: {
+    sku: string
+    color: string
+    colorHex: string
+    size: string
+  }) {
     if (!id || isNew) return
     setError(null)
     try {
-      await createVariant({ productId: id, sku, price: 0, stock: 0, isActive: true })
+      await createVariant({ productId: id, ...data, price: 0, stock: 0, isActive: true })
       setProduct(await getProductById(id, { includeInactiveVariants: true }))
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to add variant')
@@ -148,7 +155,7 @@ export function AdminProductPage() {
           />
         </label>
         {form.imageUrl && (
-          <div className="size-32 overflow-hidden rounded-lg bg-muted">
+          <div className="size-32 overflow-hidden bg-muted">
             <img
               src={form.imageUrl}
               alt=""
@@ -182,6 +189,14 @@ export function AdminProductPage() {
           />
           Active
         </label>
+        <label className="flex items-center gap-2 text-sm">
+          <input
+            type="checkbox"
+            checked={form.isBestSeller}
+            onChange={(e) => setForm({ ...form, isBestSeller: e.target.checked })}
+          />
+          Best seller
+        </label>
         <Button type="submit" disabled={isSaving}>
           {isSaving ? 'Saving...' : isNew ? 'Create product' : 'Save changes'}
         </Button>
@@ -206,11 +221,14 @@ function VariantsEditor({
   variants: ProductWithVariants['variants']
   onSave: (
     variantId: string,
-    data: { price: number; stock: number; isActive: boolean },
+    data: { price: number; originalPrice: number | null; stock: number; isActive: boolean },
   ) => void
-  onCreate: (sku: string) => void
+  onCreate: (data: { sku: string; color: string; colorHex: string; size: string }) => void
 }) {
   const [newSku, setNewSku] = useState('')
+  const [newColor, setNewColor] = useState('')
+  const [newColorHex, setNewColorHex] = useState('#000000')
+  const [newSize, setNewSize] = useState('')
 
   return (
     <div className="flex max-w-md flex-col gap-3">
@@ -223,21 +241,51 @@ function VariantsEditor({
       <form
         onSubmit={(e) => {
           e.preventDefault()
-          if (!newSku.trim()) return
-          onCreate(newSku.trim())
+          if (!newColor.trim() || !newSize.trim() || !newSku.trim()) return
+          onCreate({
+            sku: newSku.trim(),
+            color: newColor.trim(),
+            colorHex: newColorHex,
+            size: newSize.trim(),
+          })
           setNewSku('')
+          setNewColor('')
+          setNewColorHex('#000000')
+          setNewSize('')
         }}
-        className="flex gap-2"
+        className="flex flex-col gap-2"
       >
-        <input
-          value={newSku}
-          onChange={(e) => setNewSku(e.target.value)}
-          placeholder="New variant SKU"
-          className="flex-1 rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
-        />
-        <Button type="submit" variant="outline">
-          Add variant
-        </Button>
+        <div className="flex gap-2">
+          <input
+            type="color"
+            value={newColorHex}
+            onChange={(e) => setNewColorHex(e.target.value)}
+            className="h-9 w-10 shrink-0 rounded-lg border border-border bg-background p-1"
+          />
+          <input
+            value={newColor}
+            onChange={(e) => setNewColor(e.target.value)}
+            placeholder="Color name"
+            className="flex-1 rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+          />
+          <input
+            value={newSize}
+            onChange={(e) => setNewSize(e.target.value)}
+            placeholder="Size"
+            className="w-24 rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+          />
+        </div>
+        <div className="flex gap-2">
+          <input
+            value={newSku}
+            onChange={(e) => setNewSku(e.target.value)}
+            placeholder="SKU"
+            className="flex-1 rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+          />
+          <Button type="submit" variant="outline">
+            Add variant
+          </Button>
+        </div>
       </form>
     </div>
   )
@@ -250,20 +298,30 @@ function VariantRow({
   variant: ProductWithVariants['variants'][number]
   onSave: (
     variantId: string,
-    data: { price: number; stock: number; isActive: boolean },
+    data: { price: number; originalPrice: number | null; stock: number; isActive: boolean },
   ) => void
 }) {
   const [price, setPrice] = useState(variant.price)
+  const [originalPrice, setOriginalPrice] = useState(variant.originalPrice ?? 0)
   const [stock, setStock] = useState(variant.stock)
   const [isActive, setIsActive] = useState(variant.isActive)
 
   return (
-    <li className="flex flex-col gap-2 rounded-lg border border-border p-3">
+    <li className="flex flex-col gap-2 border border-border p-3">
       <div className="flex items-center justify-between">
-        <span className="font-medium">{variant.sku}</span>
+        <div className="flex items-center gap-2">
+          <span
+            className="size-4 shrink-0 border border-black/10"
+            style={{ backgroundColor: variant.colorHex }}
+          />
+          <span className="font-medium">
+            {variant.color} / {variant.size}
+          </span>
+          <span className="text-xs text-muted-foreground">{variant.sku}</span>
+        </div>
         <span className="text-xs text-muted-foreground">{variant.status}</span>
       </div>
-      <div className="flex items-center gap-2 text-sm">
+      <div className="flex flex-wrap items-center gap-2 text-sm">
         <label className="flex items-center gap-1">
           Price
           <input
@@ -271,6 +329,17 @@ function VariantRow({
             min={0}
             value={price}
             onChange={(e) => setPrice(Number(e.target.value))}
+            className="w-24 rounded-lg border border-border bg-background px-2 py-1"
+          />
+        </label>
+        <label className="flex items-center gap-1">
+          Was (sale)
+          <input
+            type="number"
+            min={0}
+            value={originalPrice}
+            onChange={(e) => setOriginalPrice(Number(e.target.value))}
+            placeholder="0"
             className="w-24 rounded-lg border border-border bg-background px-2 py-1"
           />
         </label>
@@ -296,7 +365,14 @@ function VariantRow({
           type="button"
           size="sm"
           variant="outline"
-          onClick={() => onSave(variant.id, { price, stock, isActive })}
+          onClick={() =>
+            onSave(variant.id, {
+              price,
+              originalPrice: originalPrice > 0 ? originalPrice : null,
+              stock,
+              isActive,
+            })
+          }
         >
           Save
         </Button>

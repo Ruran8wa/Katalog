@@ -108,7 +108,7 @@ export function CartDrawer() {
                     >
                       <Link
                         to={`/products/${line.productId}`}
-                        className="size-16 shrink-0 overflow-hidden rounded-lg bg-muted"
+                        className="size-16 shrink-0 overflow-hidden bg-muted"
                       >
                         <img
                           src={line.productImageUrl}
@@ -123,7 +123,9 @@ export function CartDrawer() {
                         >
                           {line.productName}
                         </Link>
-                        <span className="text-xs text-muted-foreground">{line.sku}</span>
+                        <span className="text-xs text-muted-foreground">
+                          {line.color} / {line.size}
+                        </span>
                         <span className="text-sm">{line.price.toLocaleString()} RWF</span>
                         <div className="mt-1 flex items-center gap-2">
                           <div className="flex items-center rounded-lg border border-border">
