@@ -8,6 +8,7 @@ import { cartDrawerHandle } from '@/components/CartDrawer'
 import { cn } from '@/lib/utils'
 import { useCart } from '@/context/CartContext'
 import type { ProductWithVariants, Variant } from '@/types'
+import { getPrimaryImageUrl } from '@/utils/productImage'
 
 const STOCK_LABEL: Record<string, string> = {
   IN_STOCK: 'In stock',
@@ -25,6 +26,7 @@ export function ProductDetailPage() {
   const [selectedColor, setSelectedColor] = useState<string | null>(null)
   const [selectedSize, setSelectedSize] = useState<string | null>(null)
   const [quantity, setQuantity] = useState(1)
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0)
 
   useEffect(() => {
     if (!id) return
@@ -32,9 +34,11 @@ export function ProductDetailPage() {
       .then((result) => {
         setProduct(result)
         const initialVariant =
-          result.variants.find((v) => v.status !== 'OUT_OF_STOCK') ?? result.variants[0]
+          result.variants.find((v) => v.status !== 'OUT_OF_STOCK') ??
+          result.variants[0]
         setSelectedColor(initialVariant?.color ?? null)
         setSelectedSize(initialVariant?.size ?? null)
+        setSelectedImageIndex(result.primaryImageIndex)
         setError(null)
       })
       .catch((err: unknown) =>
@@ -75,7 +79,9 @@ export function ProductDetailPage() {
     setSelectedColor(color)
     const variantsForColor = product!.variants.filter((v) => v.color === color)
     const nextVariant =
-      variantsForColor.find((v) => v.size === selectedSize && v.status !== 'OUT_OF_STOCK') ??
+      variantsForColor.find(
+        (v) => v.size === selectedSize && v.status !== 'OUT_OF_STOCK',
+      ) ??
       variantsForColor.find((v) => v.status !== 'OUT_OF_STOCK') ??
       variantsForColor[0]
     setSelectedSize(nextVariant?.size ?? null)
@@ -94,7 +100,10 @@ export function ProductDetailPage() {
         variantId: selectedVariant.id,
         productId: product.id,
         productName: product.name,
-        productImageUrl: product.imageUrl,
+        productImageUrl: getPrimaryImageUrl(
+          product.images,
+          product.primaryImageIndex,
+        ),
         sku: selectedVariant.sku,
         color: selectedVariant.color,
         size: selectedVariant.size,
@@ -107,7 +116,8 @@ export function ProductDetailPage() {
     const toastId = toast.add({
       type: 'success',
       title: 'Added to cart',
-      description: quantity > 1 ? `${quantity} × ${product.name}` : product.name,
+      description:
+        quantity > 1 ? `${quantity} × ${product.name}` : product.name,
       actionProps: {
         children: 'View cart',
         onClick: () => {
@@ -118,9 +128,11 @@ export function ProductDetailPage() {
     })
   }
 
-  const canAddToCart = !!selectedVariant && selectedVariant.status !== 'OUT_OF_STOCK'
+  const canAddToCart =
+    !!selectedVariant && selectedVariant.status !== 'OUT_OF_STOCK'
   const isOnSale =
-    !!selectedVariant?.originalPrice && selectedVariant.originalPrice > selectedVariant.price
+    !!selectedVariant?.originalPrice &&
+    selectedVariant.originalPrice > selectedVariant.price
   const discountPercent =
     isOnSale && selectedVariant
       ? Math.round(
@@ -137,12 +149,39 @@ export function ProductDetailPage() {
       </Link>
 
       <div className="grid grid-cols-1 gap-10 md:grid-cols-2">
-        <div className="aspect-[3/4] overflow-hidden bg-muted">
-          <img
-            src={product.imageUrl}
-            alt={product.name}
-            className="h-full w-full object-cover"
-          />
+        <div className="flex flex-col gap-2">
+          <div className="aspect-[3/4] overflow-hidden bg-muted">
+            <img
+              src={product.images[selectedImageIndex] ?? product.images[0]}
+              alt={product.name}
+              className="h-full w-full object-cover"
+            />
+          </div>
+          {product.images.length > 1 && (
+            <div className="flex flex-wrap gap-2">
+              {product.images.map((url, index) => (
+                <button
+                  key={url + index}
+                  type="button"
+                  aria-label={`Show image ${index + 1}`}
+                  aria-pressed={index === selectedImageIndex}
+                  onClick={() => setSelectedImageIndex(index)}
+                  className={cn(
+                    'size-16 overflow-hidden border-2 bg-muted transition-colors',
+                    index === selectedImageIndex
+                      ? 'border-primary'
+                      : 'border-transparent hover:border-border',
+                  )}
+                >
+                  <img
+                    src={url}
+                    alt=""
+                    className="h-full w-full object-cover"
+                  />
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="flex flex-col gap-6">
@@ -151,7 +190,9 @@ export function ProductDetailPage() {
               {product.categoryName}
               {product.isBestSeller && ' · Best Seller'}
             </span>
-            <h1 className="text-2xl font-semibold tracking-tight">{product.name}</h1>
+            <h1 className="text-2xl font-semibold tracking-tight">
+              {product.name}
+            </h1>
             {selectedVariant && (
               <p className="flex items-baseline gap-2">
                 <span className="text-xl font-semibold">
@@ -214,7 +255,8 @@ export function ProductDetailPage() {
                     const variant = product.variants.find(
                       (v) => v.color === selectedColor && v.size === size,
                     )
-                    const disabled = !variant || variant.status === 'OUT_OF_STOCK'
+                    const disabled =
+                      !variant || variant.status === 'OUT_OF_STOCK'
                     return (
                       <button
                         key={size}
@@ -264,7 +306,9 @@ export function ProductDetailPage() {
               <button
                 type="button"
                 aria-label="Increase quantity"
-                disabled={!canAddToCart || quantity >= (selectedVariant?.stock ?? 0)}
+                disabled={
+                  !canAddToCart || quantity >= (selectedVariant?.stock ?? 0)
+                }
                 onClick={() =>
                   selectedVariant &&
                   setQuantity((q) => Math.min(selectedVariant.stock, q + 1))
@@ -281,7 +325,9 @@ export function ProductDetailPage() {
               disabled={!canAddToCart}
               onClick={handleAddToCart}
             >
-              {selectedVariant?.status === 'OUT_OF_STOCK' ? 'Out of stock' : 'Add to cart'}
+              {selectedVariant?.status === 'OUT_OF_STOCK'
+                ? 'Out of stock'
+                : 'Add to cart'}
             </Button>
           </div>
         </div>

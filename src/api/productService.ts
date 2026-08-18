@@ -22,7 +22,8 @@ export interface ProductInput {
   categoryId: string
   isActive: boolean
   isBestSeller: boolean
-  imageUrl: string
+  images: string[]
+  primaryImageIndex: number
 }
 
 export interface ProductListItem extends Product {
@@ -45,7 +46,9 @@ export interface VariantInput {
 function cheapestActiveVariant(productId: string): Variant | null {
   const active = variants.filter((v) => v.productId === productId && v.isActive)
   if (active.length === 0) return null
-  return active.reduce((cheapest, v) => (v.price < cheapest.price ? v : cheapest))
+  return active.reduce((cheapest, v) =>
+    v.price < cheapest.price ? v : cheapest,
+  )
 }
 
 function productColors(productId: string): { name: string; hex: string }[] {
@@ -69,14 +72,19 @@ export async function getProducts(
     .filter((product) => {
       if (!product.isActive && !params.includeInactive) return false
       if (keyword && !product.name.toLowerCase().includes(keyword)) return false
-      if (params.categoryIds?.length && !params.categoryIds.includes(product.categoryId)) {
+      if (
+        params.categoryIds?.length &&
+        !params.categoryIds.includes(product.categoryId)
+      ) {
         return false
       }
       if (params.minPrice !== undefined || params.maxPrice !== undefined) {
         const price = cheapestActiveVariant(product.id)?.price ?? null
         if (price === null) return false
-        if (params.minPrice !== undefined && price < params.minPrice) return false
-        if (params.maxPrice !== undefined && price > params.maxPrice) return false
+        if (params.minPrice !== undefined && price < params.minPrice)
+          return false
+        if (params.maxPrice !== undefined && price > params.maxPrice)
+          return false
       }
       return true
     })
@@ -121,6 +129,19 @@ export async function createProduct(data: ProductInput): Promise<Product> {
   return product
 }
 
+export async function deleteProduct(id: string): Promise<void> {
+  await delay()
+  const index = products.findIndex((p) => p.id === id)
+  if (index === -1) {
+    throw new Error(`Product with id "${id}" not found`)
+  }
+
+  products.splice(index, 1)
+  for (let i = variants.length - 1; i >= 0; i -= 1) {
+    if (variants[i].productId === id) variants.splice(i, 1)
+  }
+}
+
 export async function updateProduct(
   id: string,
   data: Partial<ProductInput>,
@@ -146,6 +167,45 @@ export async function createVariant(data: VariantInput): Promise<Variant> {
   }
   variants.push(variant)
   return variant
+}
+
+export interface AdminStats {
+  totalProducts: number
+  activeProducts: number
+  inactiveProducts: number
+  totalVariants: number
+  outOfStockVariants: number
+  lowStockVariants: number
+  categoryBreakdown: {
+    categoryId: string
+    categoryName: string
+    productCount: number
+  }[]
+}
+
+export async function getAdminStats(): Promise<AdminStats> {
+  await delay()
+  const activeProducts = products.filter((p) => p.isActive).length
+  const activeVariants = variants.filter((v) => v.isActive)
+
+  return {
+    totalProducts: products.length,
+    activeProducts,
+    inactiveProducts: products.length - activeProducts,
+    totalVariants: variants.length,
+    outOfStockVariants: activeVariants.filter(
+      (v) => v.status === 'OUT_OF_STOCK',
+    ).length,
+    lowStockVariants: activeVariants.filter((v) => v.status === 'LOW_STOCK')
+      .length,
+    categoryBreakdown: categories.map((category) => ({
+      categoryId: category.id,
+      categoryName: category.name,
+      productCount: products.filter(
+        (p) => p.categoryId === category.id && p.isActive,
+      ).length,
+    })),
+  }
 }
 
 export async function updateVariant(

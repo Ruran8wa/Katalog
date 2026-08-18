@@ -7,7 +7,8 @@ export interface Product {
   categoryId: string
   isActive: boolean
   isBestSeller: boolean
-  imageUrl: string
+  images: string[]
+  primaryImageIndex: number
 }
 
 export interface ProductWithVariants extends Product {
