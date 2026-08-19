@@ -22,8 +22,10 @@ export const products: Product[] = [
     categoryId: 'cat-1',
     isActive: true,
     isBestSeller: true,
-    imageUrl:
+    images: [
       'https://plus.unsplash.com/premium_photo-1689562473471-6e736b8afe15?auto=format&fit=crop&w=800&q=80',
+    ],
+    primaryImageIndex: 0,
   },
   {
     id: 'prod-2',
@@ -33,8 +35,10 @@ export const products: Product[] = [
     categoryId: 'cat-1',
     isActive: true,
     isBestSeller: false,
-    imageUrl:
+    images: [
       'https://images.unsplash.com/photo-1571455786673-9d9d6c194f90?auto=format&fit=crop&w=800&q=80',
+    ],
+    primaryImageIndex: 0,
   },
   {
     id: 'prod-3',
@@ -44,8 +48,10 @@ export const products: Product[] = [
     categoryId: 'cat-2',
     isActive: true,
     isBestSeller: false,
-    imageUrl:
+    images: [
       'https://images.unsplash.com/photo-1625910513399-c9fcba54338c?auto=format&fit=crop&w=800&q=80',
+    ],
+    primaryImageIndex: 0,
   },
   {
     id: 'prod-4',
@@ -55,8 +61,10 @@ export const products: Product[] = [
     categoryId: 'cat-2',
     isActive: true,
     isBestSeller: false,
-    imageUrl:
+    images: [
       'https://images.unsplash.com/photo-1632900820454-84def8102f52?auto=format&fit=crop&w=800&q=80',
+    ],
+    primaryImageIndex: 0,
   },
   {
     id: 'prod-5',
@@ -66,8 +74,10 @@ export const products: Product[] = [
     categoryId: 'cat-2',
     isActive: true,
     isBestSeller: false,
-    imageUrl:
+    images: [
       'https://images.unsplash.com/photo-1624835567150-0c530a20d8cc?auto=format&fit=crop&w=800&q=80',
+    ],
+    primaryImageIndex: 0,
   },
   {
     id: 'prod-6',
@@ -77,8 +87,10 @@ export const products: Product[] = [
     categoryId: 'cat-3',
     isActive: true,
     isBestSeller: true,
-    imageUrl:
+    images: [
       'https://plus.unsplash.com/premium_photo-1690366911130-5435a5a9bc9f?auto=format&fit=crop&w=800&q=80',
+    ],
+    primaryImageIndex: 0,
   },
   {
     id: 'prod-7',
@@ -88,8 +100,10 @@ export const products: Product[] = [
     categoryId: 'cat-3',
     isActive: true,
     isBestSeller: false,
-    imageUrl:
+    images: [
       'https://images.unsplash.com/photo-1555689502-c4b22d76c56f?auto=format&fit=crop&w=800&q=80',
+    ],
+    primaryImageIndex: 0,
   },
   {
     id: 'prod-8',
@@ -99,8 +113,10 @@ export const products: Product[] = [
     categoryId: 'cat-3',
     isActive: true,
     isBestSeller: false,
-    imageUrl:
+    images: [
       'https://images.unsplash.com/photo-1511794322962-129ddbd0af38?auto=format&fit=crop&w=800&q=80',
+    ],
+    primaryImageIndex: 0,
   },
   {
     id: 'prod-9',
@@ -110,8 +126,10 @@ export const products: Product[] = [
     categoryId: 'cat-4',
     isActive: true,
     isBestSeller: true,
-    imageUrl:
+    images: [
       'https://images.unsplash.com/photo-1691256676359-20e5c6d4bc92?auto=format&fit=crop&w=800&q=80',
+    ],
+    primaryImageIndex: 0,
   },
   {
     id: 'prod-10',
@@ -121,8 +139,10 @@ export const products: Product[] = [
     categoryId: 'cat-4',
     isActive: true,
     isBestSeller: false,
-    imageUrl:
+    images: [
       'https://images.unsplash.com/photo-1552493450-2b5ce80ed13f?auto=format&fit=crop&w=800&q=80',
+    ],
+    primaryImageIndex: 0,
   },
   {
     id: 'prod-11',
@@ -132,8 +152,10 @@ export const products: Product[] = [
     categoryId: 'cat-5',
     isActive: true,
     isBestSeller: false,
-    imageUrl:
+    images: [
       'https://images.unsplash.com/photo-1619603364904-c0498317e145?auto=format&fit=crop&w=800&q=80',
+    ],
+    primaryImageIndex: 0,
   },
   {
     id: 'prod-12',
@@ -143,8 +165,10 @@ export const products: Product[] = [
     categoryId: 'cat-5',
     isActive: true,
     isBestSeller: false,
-    imageUrl:
+    images: [
       'https://images.unsplash.com/photo-1561748138-35c7c69cf3bf?auto=format&fit=crop&w=800&q=80',
+    ],
+    primaryImageIndex: 0,
   },
   {
     id: 'prod-13',
@@ -154,8 +178,10 @@ export const products: Product[] = [
     categoryId: 'cat-5',
     isActive: false,
     isBestSeller: false,
-    imageUrl:
+    images: [
       'https://images.unsplash.com/photo-1661110546899-732bffb4cb85?auto=format&fit=crop&w=800&q=80',
+    ],
+    primaryImageIndex: 0,
   },
 ]
 
@@ -208,25 +234,55 @@ export const variants: Variant[] = [
   variant('prod-1', 'white', 'L', 'IMG-TEE-WHT-L', 12000, 0),
   variant('prod-1', 'black', 'S', 'IMG-TEE-BLK-S', 12000, 14),
   variant('prod-1', 'black', 'M', 'IMG-TEE-BLK-M', 12000, 3),
-  variant('prod-1', 'black', 'L', 'IMG-TEE-BLK-L', 12000, 0, { isActive: false }),
+  variant('prod-1', 'black', 'L', 'IMG-TEE-BLK-L', 12000, 0, {
+    isActive: false,
+  }),
 
   // prod-2: Kigali Skyline Graphic Tee (on sale)
-  variant('prod-2', 'black', 'S', 'KGL-TEE-BLK-S', 14000, 20, { originalPrice: 20000 }),
-  variant('prod-2', 'black', 'M', 'KGL-TEE-BLK-M', 14000, 4, { originalPrice: 20000 }),
-  variant('prod-2', 'black', 'L', 'KGL-TEE-BLK-L', 14000, 0, { originalPrice: 20000 }),
-  variant('prod-2', 'heatherGrey', 'S', 'KGL-TEE-GRY-S', 14000, 16, { originalPrice: 20000 }),
-  variant('prod-2', 'heatherGrey', 'M', 'KGL-TEE-GRY-M', 14000, 9, { originalPrice: 20000 }),
-  variant('prod-2', 'heatherGrey', 'L', 'KGL-TEE-GRY-L', 14000, 2, { originalPrice: 20000 }),
+  variant('prod-2', 'black', 'S', 'KGL-TEE-BLK-S', 14000, 20, {
+    originalPrice: 20000,
+  }),
+  variant('prod-2', 'black', 'M', 'KGL-TEE-BLK-M', 14000, 4, {
+    originalPrice: 20000,
+  }),
+  variant('prod-2', 'black', 'L', 'KGL-TEE-BLK-L', 14000, 0, {
+    originalPrice: 20000,
+  }),
+  variant('prod-2', 'heatherGrey', 'S', 'KGL-TEE-GRY-S', 14000, 16, {
+    originalPrice: 20000,
+  }),
+  variant('prod-2', 'heatherGrey', 'M', 'KGL-TEE-GRY-M', 14000, 9, {
+    originalPrice: 20000,
+  }),
+  variant('prod-2', 'heatherGrey', 'L', 'KGL-TEE-GRY-L', 14000, 2, {
+    originalPrice: 20000,
+  }),
 
   // prod-3: Inyambo Polo Shirt (on sale)
-  variant('prod-3', 'navy', 'S', 'INY-POLO-NVY-S', 22000, 16, { originalPrice: 28000 }),
-  variant('prod-3', 'navy', 'M', 'INY-POLO-NVY-M', 22000, 9, { originalPrice: 28000 }),
-  variant('prod-3', 'navy', 'L', 'INY-POLO-NVY-L', 22000, 2, { originalPrice: 28000 }),
-  variant('prod-3', 'navy', 'XL', 'INY-POLO-NVY-XL', 23000, 0, { originalPrice: 29000 }),
-  variant('prod-3', 'white', 'S', 'INY-POLO-WHT-S', 22000, 11, { originalPrice: 28000 }),
-  variant('prod-3', 'white', 'M', 'INY-POLO-WHT-M', 22000, 7, { originalPrice: 28000 }),
-  variant('prod-3', 'white', 'L', 'INY-POLO-WHT-L', 22000, 0, { originalPrice: 28000 }),
-  variant('prod-3', 'white', 'XL', 'INY-POLO-WHT-XL', 23000, 3, { originalPrice: 29000 }),
+  variant('prod-3', 'navy', 'S', 'INY-POLO-NVY-S', 22000, 16, {
+    originalPrice: 28000,
+  }),
+  variant('prod-3', 'navy', 'M', 'INY-POLO-NVY-M', 22000, 9, {
+    originalPrice: 28000,
+  }),
+  variant('prod-3', 'navy', 'L', 'INY-POLO-NVY-L', 22000, 2, {
+    originalPrice: 28000,
+  }),
+  variant('prod-3', 'navy', 'XL', 'INY-POLO-NVY-XL', 23000, 0, {
+    originalPrice: 29000,
+  }),
+  variant('prod-3', 'white', 'S', 'INY-POLO-WHT-S', 22000, 11, {
+    originalPrice: 28000,
+  }),
+  variant('prod-3', 'white', 'M', 'INY-POLO-WHT-M', 22000, 7, {
+    originalPrice: 28000,
+  }),
+  variant('prod-3', 'white', 'L', 'INY-POLO-WHT-L', 22000, 0, {
+    originalPrice: 28000,
+  }),
+  variant('prod-3', 'white', 'XL', 'INY-POLO-WHT-XL', 23000, 3, {
+    originalPrice: 29000,
+  }),
 
   // prod-4: Kitenge Print Button-Up Shirt
   variant('prod-4', 'terracotta', 'M', 'KTG-SHIRT-TER-M', 28000, 12),

@@ -4,17 +4,23 @@ import type { ProductListItem } from '@/api/productService'
 import { cartDrawerHandle } from '@/components/CartDrawer'
 import { toast } from '@/components/ui/toast'
 import { useCart } from '@/context/CartContext'
+import { getPrimaryImageUrl } from '@/utils/productImage'
 
 const MAX_VISIBLE_SWATCHES = 5
 
 export function ProductCard({ product }: { product: ProductListItem }) {
   const { addItem } = useCart()
   const variant = product.defaultVariant
+  const imageUrl = getPrimaryImageUrl(product.images, product.primaryImageIndex)
   const canQuickAdd = !!variant && variant.status !== 'OUT_OF_STOCK'
-  const isOnSale = !!variant?.originalPrice && variant.originalPrice > variant.price
+  const isOnSale =
+    !!variant?.originalPrice && variant.originalPrice > variant.price
   const discountPercent =
     isOnSale && variant
-      ? Math.round(((variant.originalPrice! - variant.price) / variant.originalPrice!) * 100)
+      ? Math.round(
+          ((variant.originalPrice! - variant.price) / variant.originalPrice!) *
+            100,
+        )
       : 0
 
   function handleQuickAdd() {
@@ -24,7 +30,7 @@ export function ProductCard({ product }: { product: ProductListItem }) {
         variantId: variant.id,
         productId: product.id,
         productName: product.name,
-        productImageUrl: product.imageUrl,
+        productImageUrl: imageUrl,
         sku: variant.sku,
         color: variant.color,
         size: variant.size,
@@ -53,7 +59,7 @@ export function ProductCard({ product }: { product: ProductListItem }) {
       <div className="group relative aspect-[3/4] overflow-hidden bg-muted">
         <Link to={`/products/${product.id}`} className="block h-full w-full">
           <img
-            src={product.imageUrl}
+            src={imageUrl}
             alt={product.name}
             loading="lazy"
             className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
@@ -99,13 +105,17 @@ export function ProductCard({ product }: { product: ProductListItem }) {
         <h3 className="text-sm font-medium leading-snug">{product.name}</h3>
         {variant ? (
           <span className="flex flex-wrap items-baseline gap-1.5 text-sm">
-            <span className="font-semibold">{variant.price.toLocaleString()} RWF</span>
+            <span className="font-semibold">
+              {variant.price.toLocaleString()} RWF
+            </span>
             {isOnSale && (
               <>
                 <span className="text-muted-foreground line-through">
                   {variant.originalPrice!.toLocaleString()} RWF
                 </span>
-                <span className="font-semibold text-destructive">-{discountPercent}% Off</span>
+                <span className="font-semibold text-destructive">
+                  -{discountPercent}% Off
+                </span>
               </>
             )}
           </span>
