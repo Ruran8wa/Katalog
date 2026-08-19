@@ -8,6 +8,7 @@ import { CategoryPage } from '@/pages/CategoryPage'
 import { HomePage } from '@/pages/HomePage'
 import { LoginPage } from '@/pages/LoginPage'
 import { NotFoundPage } from '@/pages/NotFoundPage'
+import { OrderHistoryPage } from '@/pages/OrderHistoryPage'
 import { ProductDetailPage } from '@/pages/ProductDetailPage'
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/category/:categoryId" element={<CategoryPage />} />
           <Route path="/products/:id" element={<ProductDetailPage />} />
+          <Route path="/orders" element={<OrderHistoryPage />} />
         </Route>
         <Route path="/login" element={<LoginPage />} />
         <Route element={<RequireAdmin />}>

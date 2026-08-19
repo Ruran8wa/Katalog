@@ -1,5 +1,5 @@
 import { Drawer } from '@base-ui/react/drawer'
-import { Menu, User, X } from 'lucide-react'
+import { Menu, Receipt, User, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Link, Outlet, useLocation } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
@@ -65,9 +65,20 @@ export function Layout() {
           <div className="flex items-center justify-end gap-3 text-sm">
             {!isAdmin && <CartDrawerTrigger />}
             {user ? (
-              <Button variant="outline" size="sm" onClick={logout}>
-                Log out
-              </Button>
+              <>
+                {!isAdmin && (
+                  <Link
+                    to="/orders"
+                    aria-label="Order history"
+                    className="p-1 text-foreground hover:text-muted-foreground"
+                  >
+                    <Receipt className="size-5" />
+                  </Link>
+                )}
+                <Button variant="outline" size="sm" onClick={logout}>
+                  Log out
+                </Button>
+              </>
             ) : (
               <Link
                 to="/login"
